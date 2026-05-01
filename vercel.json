@@ -1,8 +1,13 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/baremux/(.*)", "destination": "/baremux/$1" },
-    { "source": "/uv/(.*)", "destination": "/uv/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/uv/service/(.*)",
+      "destination": "/404"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
