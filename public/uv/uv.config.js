@@ -1,8 +1,6 @@
 self.__uv$config = {
     prefix: '/uv/service/',
-    bare: 'https://your-bare-server-url.com', // MUST BE A WORKING URL
-    encodeUrl: Ultraviolet.codec.xor.encode,
-    decodeUrl: Ultraviolet.codec.xor.decode,
+    bare: 'https://student-unblocker.com', 
     handler: '/uv/uv.handler.js',
     bundle: '/uv/uv.bundle.js',
     config: '/uv/uv.config.js',
