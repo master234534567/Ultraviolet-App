@@ -1,9 +1,15 @@
 {
   "version": 2,
-  "rewrites": [
-    { "source": "/baremux/(.*)", "destination": "/baremux/$1" },
-    { "source": "/uv/(.*)", "destination": "/uv/$1" },
-    { "source": "/epoxy/(.*)", "destination": "/epoxy/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
   ]
 }
