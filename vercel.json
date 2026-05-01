@@ -1,13 +1,7 @@
 {
   "version": 2,
   "rewrites": [
-    {
-      "source": "/uv/service/(.*)",
-      "destination": "/404.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/uv/service/(.*)", "destination": "/404.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
