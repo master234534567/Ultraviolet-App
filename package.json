@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
-		"build": "mkdir -p public/uv public/baremux public/epoxy && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.bundle.js public/uv/uv.bundle.js && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.handler.js public/uv/uv.handler.js && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.sw.js public/uv/uv.sw.js && cp node_modules/@mercuryworkshop/bare-mux/dist/index.js public/baremux/index.js && cp node_modules/@mercuryworkshop/epoxy-transport/dist/index.mjs public/epoxy/index.mjs && printf \"importScripts('uv.bundle.js');\\nimportScripts('uv.config.js');\\n$(cat public/uv/uv.sw.js)\" > public/uv/uv.sw.js"
+		"build": "mkdir -p public/uv public/baremux public/epoxy && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.bundle.js public/uv/uv.bundle.js && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.handler.js public/uv/uv.handler.js && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.sw.js public/uv/uv.sw.js && cp node_modules/@mercuryworkshop/bare-mux/dist/index.js public/baremux/index.js && cp node_modules/@mercuryworkshop/bare-mux/dist/worker.js public/baremux/worker.js && cp node_modules/@mercuryworkshop/epoxy-transport/dist/index.mjs public/epoxy/index.mjs && printf \"importScripts('uv.bundle.js');\\nimportScripts('uv.config.js');\\n$(cat public/uv/uv.sw.js)\" > public/uv/uv.sw.js"
 	},
 	"dependencies": {
 		"@mercuryworkshop/bare-mux": "^2.1.8",
