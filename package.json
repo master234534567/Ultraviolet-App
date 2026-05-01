@@ -2,15 +2,11 @@
 	"name": "uv-app",
 	"version": "1.0.0",
 	"type": "module",
-	"engines": {
-		"node": ">=18.0.0"
-	},
 	"scripts": {
 		"start": "node src/index.js",
-		"build": "mkdir -p public/uv public/baremux && cp -r node_modules/@titaniumnetwork-dev/ultraviolet/dist/* public/uv/ && cp -r node_modules/@mercuryworkshop/bare-mux/dist/* public/baremux/ && cp -r node_modules/@mercuryworkshop/epoxy-transport/dist/* public/uv/",
+		"build": "mkdir -p public/uv public/baremux && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.bundle.js public/uv/uv.bundle.js && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.handler.js public/uv/uv.handler.js && cp node_modules/@titaniumnetwork-dev/ultraviolet/dist/uv.sw.js public/uv/uv.sw.js && cp node_modules/@mercuryworkshop/bare-mux/dist/index.js public/baremux/index.js",
 		"format": "prettier --write .",
-		"lint": "eslint ./src/",
-		"lint:fix": "eslint ./src/ --fix"
+		"lint": "eslint ./src/"
 	},
 	"dependencies": {
 		"@mercuryworkshop/bare-mux": "^2.1.8",
@@ -19,9 +15,5 @@
 		"express": "^5.0.0",
 		"wisp-server-node": "1.1.7",
 		"ws": "^8.18.0"
-	},
-	"devDependencies": {
-		"eslint": "^9.0.0",
-		"prettier": "^3.0.0"
 	}
 }
