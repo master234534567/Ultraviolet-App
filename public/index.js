@@ -19,6 +19,8 @@ const error = document.getElementById("uv-error");
  * @type {HTMLPreElement}
  */
 const errorCode = document.getElementById("uv-error-code");
+
+// Standard connection to the BareMux library
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
 
 form.addEventListener("submit", async (event) => {
@@ -36,15 +38,19 @@ form.addEventListener("submit", async (event) => {
 
 	let frame = document.getElementById("uv-frame");
 	frame.style.display = "block";
-	let wispUrl =
-		(location.protocol === "https:" ? "wss" : "ws") +
-		"://" +
-		location.host +
-		"/wisp/";
+
+	/**
+	 * Vercel is a serverless platform and CANNOT host Wisp/WebSockets.
+	 * We must point this to an external public Wisp server for the proxy to work.
+	 */
+	let wispUrl = "wss://wisp.mercurywork.shop/";
+
+	// Load the Epoxy transport from the folder created by our build script
 	if ((await connection.getTransport()) !== "/epoxy/index.mjs") {
 		await connection.setTransport("/epoxy/index.mjs", [
 			{ wisp: wispUrl },
 		]);
 	}
+
 	frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
 });
