@@ -1,179 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nebula</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>" />
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/style.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Nebula</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#05070f;--ink2:#0a0d1c;--ink3:#0f1428;
+  --glass:rgba(15,20,40,0.7);--glass2:rgba(20,28,55,0.5);
+  --rim:rgba(140,160,255,0.12);--rim-hi:rgba(140,160,255,0.35);
+  --a1:#818cf8;--a2:#c084fc;--a3:#38bdf8;--a4:#fb7185;
+  --txt:#f0f2ff;--txt2:#8892b0;--txt3:#3d4a6b;
+  --font-display:'Syne',sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --font-body:'DM Sans',sans-serif;
+}
+html,body{height:100%;background:var(--ink);color:var(--txt);font-family:var(--font-body);overflow-x:hidden;cursor:default}
+
+/* ── CANVAS BG ── */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── NOISE OVERLAY ── */
+body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size:200px 200px;opacity:.4}
+
+/* ── NAVBAR ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;padding:0 2.5rem;height:62px;
+  background:rgba(5,7,15,0.82);backdrop-filter:blur(32px) saturate(180%);
+  border-bottom:1px solid var(--rim)}
+.nav-brand{font-family:var(--font-display);font-size:1.05rem;font-weight:800;letter-spacing:.04em;
+  background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-right:2.5rem;flex-shrink:0}
+.nav-tabs{display:flex;gap:.1rem;flex:1}
+.ntab{font-family:var(--font-display);font-size:.78rem;font-weight:600;letter-spacing:.06em;
+  color:var(--txt3);background:none;border:none;cursor:pointer;padding:.4rem .9rem;border-radius:8px;transition:all .2s}
+.ntab:hover{color:var(--txt2);background:rgba(255,255,255,0.04)}
+.ntab.on{color:var(--a1);background:rgba(129,140,248,0.1)}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));
+  box-shadow:0 0 12px var(--a1);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ── TABS ── */
+.tab{display:none;position:relative;z-index:2;min-height:100vh;padding:80px 2.5rem 5rem;max-width:1160px;margin:0 auto}
+.tab.on{display:block;animation:rise .4s cubic-bezier(.22,1,.36,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO ── */
+.hero{padding:3.5rem 0 3rem;text-align:center;position:relative}
+.hero-tag{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.4em;color:var(--a1);
+  margin-bottom:1.5rem;opacity:.8}
+.hero-h{font-family:var(--font-display);font-size:clamp(2.4rem,6vw,5rem);font-weight:800;
+  line-height:1.05;letter-spacing:-.02em;margin-bottom:1.2rem}
+.hero-h .line2{display:block;
+  background:linear-gradient(90deg,var(--a1) 0%,var(--a2) 35%,var(--a3) 65%,var(--a1) 100%);
+  background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:flow 5s linear infinite}
+@keyframes flow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.hero-sub{font-size:.95rem;color:var(--txt2);font-weight:300;margin-bottom:3rem;letter-spacing:.01em}
+
+/* ── SEARCH ── */
+.srch-wrap{max-width:700px;margin:0 auto}
+.srch-outer{position:relative;padding:2px;border-radius:18px;
+  background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3),var(--a4),var(--a2),var(--a1));
+  background-size:400% 100%;animation:flow 4s linear infinite;
+  box-shadow:0 0 60px rgba(129,140,248,.2),0 0 120px rgba(192,132,252,.1)}
+.srch-inner{display:flex;align-items:center;background:var(--ink2);border-radius:16px;padding:0 .6rem 0 1.4rem;gap:.8rem}
+.srch-icon{font-size:1.1rem;color:var(--txt3);flex-shrink:0;font-style:normal}
+.srch-input{flex:1;background:none;border:none;outline:none;color:var(--txt);
+  font-family:var(--font-body);font-size:1rem;font-weight:400;padding:1.05rem 0;
+  caret-color:var(--a1)}
+.srch-input::placeholder{color:var(--txt3)}
+.srch-btn{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;cursor:pointer;
+  font-family:var(--font-display);font-size:.68rem;font-weight:700;letter-spacing:.15em;
+  padding:.7rem 1.5rem;border-radius:12px;transition:all .2s;flex-shrink:0;white-space:nowrap}
+.srch-btn:hover{opacity:.85;transform:scale(1.03)}
+.srch-btn:active{transform:scale(.97)}
+
+.hints{display:flex;gap:.5rem;justify-content:center;margin-top:.9rem;flex-wrap:wrap}
+.hint{font-family:var(--font-mono);font-size:.65rem;color:var(--txt3);cursor:pointer;
+  padding:.2rem .55rem;border-radius:6px;border:1px solid transparent;transition:all .2s}
+.hint:hover{color:var(--a1);border-color:rgba(129,140,248,.3);background:rgba(129,140,248,.07)}
+
+/* ── SECTION LABEL ── */
+.sec-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.35em;color:var(--txt3);
+  margin-bottom:1rem;margin-top:2.2rem;display:flex;align-items:center;gap:.8rem}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--rim)}
+
+/* ── QUICK GRID ── */
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.55rem}
+.qb{display:flex;flex-direction:column;align-items:center;gap:.45rem;
+  background:var(--glass);border:1px solid var(--rim);border-radius:12px;
+  padding:.95rem .6rem;color:var(--txt2);font-family:var(--font-display);font-size:.75rem;font-weight:600;
+  cursor:pointer;transition:all .22s;backdrop-filter:blur(12px)}
+.qb:hover{border-color:var(--rim-hi);color:var(--txt);background:var(--glass2);
+  transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.qi{font-size:1.15rem;font-style:normal;
+  background:linear-gradient(135deg,var(--a1),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── PAGE HEADER ── */
+.ph{margin-bottom:1.8rem}
+.ph-eye{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.4em;color:var(--a1);margin-bottom:.5rem}
+.ph-title{font-family:var(--font-display);font-size:2rem;font-weight:800;letter-spacing:-.01em}
+.ph-sub{color:var(--txt2);font-size:.88rem;margin-top:.3rem}
+
+/* ── GAMES ── */
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:.8rem}
+.gc{background:var(--glass);border:1px solid var(--rim);border-radius:14px;overflow:hidden;cursor:pointer;
+  transition:all .25s;backdrop-filter:blur(12px)}
+.gc:hover{border-color:var(--rim-hi);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.gt{height:108px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden}
+.gt::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.4))}
+.gi{padding:.78rem .9rem}
+.gn{font-family:var(--font-display);font-size:.85rem;font-weight:700;margin-bottom:.28rem}
+.gtag{font-family:var(--font-mono);font-size:.5rem;letter-spacing:.14em;
+  color:var(--a1);background:rgba(129,140,248,.1);padding:.15rem .45rem;border-radius:4px;display:inline-block}
+
+/* ── APPS ── */
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:.65rem}
+.ac{background:var(--glass);border:1px solid var(--rim);border-radius:14px;padding:1.4rem .85rem;
+  text-align:center;cursor:pointer;transition:all .2s;backdrop-filter:blur(12px)}
+.ac:hover{border-color:var(--rim-hi);transform:translateY(-3px);background:var(--glass2)}
+.ai{font-size:1.9rem;margin-bottom:.5rem}
+.an{font-family:var(--font-display);font-size:.72rem;font-weight:600;color:var(--txt2)}
+
+/* ── SETTINGS ── */
+.settings-wrap{display:flex;flex-direction:column;gap:1rem;max-width:660px}
+.sg{background:var(--glass);border:1px solid var(--rim);border-radius:14px;padding:1.4rem;backdrop-filter:blur(12px)}
+.sl{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.28em;color:var(--a1);margin-bottom:.35rem}
+.sd{font-size:.83rem;color:var(--txt2);margin-bottom:.9rem;font-weight:300}
+.sr{display:flex;gap:.4rem;flex-wrap:wrap}
+.si{flex:1;min-width:145px;background:var(--ink2);border:1px solid var(--rim);border-radius:9px;
+  padding:.55rem .85rem;color:var(--txt);font-family:var(--font-body);font-size:.85rem;outline:none;transition:border-color .2s}
+.si:focus{border-color:var(--a1)}
+.sb{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;cursor:pointer;
+  font-family:var(--font-display);font-size:.62rem;font-weight:700;letter-spacing:.12em;
+  padding:.55rem 1.1rem;border-radius:9px;transition:opacity .2s;white-space:nowrap}
+.sb:hover{opacity:.85}
+
+/* ── OVERLAY ── */
+.overlay{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;background:#000}
+.overlay.hidden{display:none}
+.pbar{display:flex;align-items:center;gap:.4rem;padding:.55rem .9rem;
+  background:var(--ink2);border-bottom:1px solid var(--rim);flex-shrink:0}
+.pnav{background:var(--ink3);border:1px solid var(--rim);color:var(--txt2);
+  border-radius:7px;padding:.3rem .65rem;cursor:pointer;font-size:.9rem;flex-shrink:0;transition:all .15s}
+.pnav:hover{background:var(--glass);color:var(--txt)}
+.purl{flex:1;font-family:var(--font-mono);font-size:.68rem;color:var(--txt2);
+  background:var(--ink3);border:1px solid var(--rim);border-radius:7px;padding:.35rem .75rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pnt{background:var(--ink3);border:1px solid var(--rim);color:var(--txt2);
+  border-radius:7px;padding:.3rem .65rem;cursor:pointer;font-size:.85rem;flex-shrink:0;transition:all .15s}
+.pnt:hover{color:var(--a1)}
+.pcls{background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.3);color:var(--a4);
+  border-radius:7px;padding:.3rem .85rem;cursor:pointer;font-family:var(--font-display);
+  font-size:.62rem;font-weight:700;letter-spacing:.1em;flex-shrink:0;transition:background .2s}
+.pcls:hover{background:rgba(251,113,133,.22)}
+.pframe{flex:1;border:none;width:100%}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--ink3);border-radius:3px}
+</style>
 </head>
 <body>
-  <div class="bg-grid"></div>
-  <div class="bg-glow glow-1"></div>
-  <div class="bg-glow glow-2"></div>
-  <canvas id="stars"></canvas>
+<canvas id="bg"></canvas>
 
-  <nav class="navbar">
-    <div class="nav-logo"><span class="logo-icon">✦</span><span class="logo-text">NEBULA</span></div>
-    <div class="nav-links">
-      <a href="#" class="nav-link active" data-tab="home">Home</a>
-      <a href="#" class="nav-link" data-tab="games">Games</a>
-      <a href="#" class="nav-link" data-tab="apps">Apps</a>
-      <a href="#" class="nav-link" data-tab="settings">Settings</a>
-    </div>
-    <div class="nav-badge">UV3</div>
-  </nav>
+<nav class="nav">
+  <div class="nav-brand">NEBULA</div>
+  <div class="nav-tabs">
+    <button class="ntab on" data-tab="home">Home</button>
+    <button class="ntab" data-tab="games">Games</button>
+    <button class="ntab" data-tab="apps">Apps</button>
+    <button class="ntab" data-tab="settings">Settings</button>
+  </div>
+  <div class="nav-dot"></div>
+</nav>
 
-  <!-- HOME -->
-  <main class="tab-content active" id="tab-home">
-    <section class="hero">
-      <div class="hero-eyebrow">ULTRAVIOLET POWERED</div>
-      <h1 class="hero-title">Browse <span class="gradient-text">Beyond</span><br/>Limits</h1>
-      <p class="hero-sub">Fast. Private. Unblocked. Everything loads.</p>
-      <div class="search-wrapper">
-        <div class="search-bar">
-          <span class="search-icon">⌕</span>
-          <input type="text" id="proxy-input" class="search-input" placeholder="Enter URL or search..." autocomplete="off" spellcheck="false" />
-          <button class="search-btn" id="go-btn">LAUNCH</button>
-        </div>
-        <div class="search-hints">
-          <span class="hint" data-q="youtube.com">▶ YouTube</span>
-          <span class="hint" data-q="discord.com">◈ Discord</span>
-          <span class="hint" data-q="reddit.com">◉ Reddit</span>
-          <span class="hint" data-q="twitch.tv">♟ Twitch</span>
-          <span class="hint" data-q="spotify.com">♫ Spotify</span>
+<!-- HOME -->
+<div class="tab on" id="tab-home">
+  <div class="hero">
+    <div class="hero-tag">// ULTRAVIOLET V3 POWERED</div>
+    <h1 class="hero-h">
+      The Web,<br/>
+      <span class="line2">Unchained.</span>
+    </h1>
+    <p class="hero-sub">Bypass filters. Stream freely. Browse privately.</p>
+    <div class="srch-wrap">
+      <div class="srch-outer">
+        <div class="srch-inner">
+          <i class="srch-icon">⌕</i>
+          <input class="srch-input" id="proxy-input" placeholder="URL or search anything..." autocomplete="off" spellcheck="false"/>
+          <button class="srch-btn" id="go-btn">LAUNCH →</button>
         </div>
       </div>
-    </section>
-    <section class="quick-links">
-      <div class="section-label">QUICK ACCESS</div>
-      <div class="links-grid">
-        <button class="quick-btn" data-url="https://youtube.com"><span class="qb-icon">▶</span>YouTube</button>
-        <button class="quick-btn" data-url="https://discord.com"><span class="qb-icon">◈</span>Discord</button>
-        <button class="quick-btn" data-url="https://reddit.com"><span class="qb-icon">◉</span>Reddit</button>
-        <button class="quick-btn" data-url="https://twitter.com"><span class="qb-icon">✕</span>Twitter/X</button>
-        <button class="quick-btn" data-url="https://spotify.com"><span class="qb-icon">♫</span>Spotify</button>
-        <button class="quick-btn" data-url="https://twitch.tv"><span class="qb-icon">♟</span>Twitch</button>
-        <button class="quick-btn" data-url="https://instagram.com"><span class="qb-icon">◎</span>Instagram</button>
-        <button class="quick-btn" data-url="https://google.com"><span class="qb-icon">✦</span>Google</button>
-        <button class="quick-btn" data-url="https://netflix.com"><span class="qb-icon">▣</span>Netflix</button>
-        <button class="quick-btn" data-url="https://tiktok.com"><span class="qb-icon">◈</span>TikTok</button>
-        <button class="quick-btn" data-url="https://github.com"><span class="qb-icon">◻</span>GitHub</button>
-        <button class="quick-btn" data-url="https://chatgpt.com"><span class="qb-icon">✧</span>ChatGPT</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- GAMES -->
-  <main class="tab-content" id="tab-games">
-    <section class="page-header">
-      <div class="hero-eyebrow">ARCADE</div>
-      <h2 class="page-title">Games</h2>
-      <p class="page-sub">Unblocked games — all run through Ultraviolet.</p>
-    </section>
-    <div class="games-grid">
-      <div class="game-card" data-url="https://1v1.lol"><div class="game-thumb" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">🎯</div><div class="game-info"><div class="game-name">1v1.LOL</div><div class="game-tag">Shooter</div></div></div>
-      <div class="game-card" data-url="https://krunker.io"><div class="game-thumb" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">🔫</div><div class="game-info"><div class="game-name">Krunker.io</div><div class="game-tag">FPS</div></div></div>
-      <div class="game-card" data-url="https://slither.io"><div class="game-thumb" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">🐍</div><div class="game-info"><div class="game-name">Slither.io</div><div class="game-tag">IO</div></div></div>
-      <div class="game-card" data-url="https://agar.io"><div class="game-thumb" style="background:linear-gradient(135deg,#fa709a,#fee140)">⚪</div><div class="game-info"><div class="game-name">Agar.io</div><div class="game-tag">IO</div></div></div>
-      <div class="game-card" data-url="https://diep.io"><div class="game-thumb" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">🎮</div><div class="game-info"><div class="game-name">Diep.io</div><div class="game-tag">IO</div></div></div>
-      <div class="game-card" data-url="https://moomoo.io"><div class="game-thumb" style="background:linear-gradient(135deg,#a1c4fd,#c2e9fb)">🌿</div><div class="game-info"><div class="game-name">MooMoo.io</div><div class="game-tag">Survival</div></div></div>
-      <div class="game-card" data-url="https://paper.io"><div class="game-thumb" style="background:linear-gradient(135deg,#fd7043,#ffcc02)">📄</div><div class="game-info"><div class="game-name">Paper.io</div><div class="game-tag">IO</div></div></div>
-      <div class="game-card" data-url="https://www.coolmathgames.com"><div class="game-thumb" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🧮</div><div class="game-info"><div class="game-name">Cool Math</div><div class="game-tag">Puzzle</div></div></div>
-      <div class="game-card" data-url="https://krunker.io"><div class="game-thumb" style="background:linear-gradient(135deg,#2d3561,#c05c7e)">🧟</div><div class="game-info"><div class="game-name">Zombs.io</div><div class="game-tag">Survival</div></div></div>
-      <div class="game-card" data-url="https://chess.com"><div class="game-thumb" style="background:linear-gradient(135deg,#c94b4b,#4b134f)">♟</div><div class="game-info"><div class="game-name">Chess.com</div><div class="game-tag">Board</div></div></div>
-      <div class="game-card" data-url="https://wordle.com"><div class="game-thumb" style="background:linear-gradient(135deg,#134e5e,#71b280)">📝</div><div class="game-info"><div class="game-name">Wordle</div><div class="game-tag">Puzzle</div></div></div>
-      <div class="game-card" data-url="https://skribbl.io"><div class="game-thumb" style="background:linear-gradient(135deg,#f7971e,#ffd200)">✏️</div><div class="game-info"><div class="game-name">Skribbl.io</div><div class="game-tag">Drawing</div></div></div>
-    </div>
-  </main>
-
-  <!-- APPS -->
-  <main class="tab-content" id="tab-apps">
-    <section class="page-header">
-      <div class="hero-eyebrow">TOOLS</div>
-      <h2 class="page-title">Apps</h2>
-      <p class="page-sub">All your essential web apps, unblocked.</p>
-    </section>
-    <div class="apps-grid">
-      <div class="app-card" data-url="https://docs.google.com"><div class="app-icon" style="color:#4285f4">◻</div><div class="app-name">Google Docs</div></div>
-      <div class="app-card" data-url="https://drive.google.com"><div class="app-icon" style="color:#34a853">▲</div><div class="app-name">Google Drive</div></div>
-      <div class="app-card" data-url="https://mail.google.com"><div class="app-icon" style="color:#ea4335">✉</div><div class="app-name">Gmail</div></div>
-      <div class="app-card" data-url="https://classroom.google.com"><div class="app-icon" style="color:#fbbc04">◈</div><div class="app-name">Classroom</div></div>
-      <div class="app-card" data-url="https://slides.google.com"><div class="app-icon" style="color:#f4b400">◼</div><div class="app-name">Google Slides</div></div>
-      <div class="app-card" data-url="https://sheets.google.com"><div class="app-icon" style="color:#0f9d58">▦</div><div class="app-name">Google Sheets</div></div>
-      <div class="app-card" data-url="https://notion.so"><div class="app-icon" style="color:#fff">◻</div><div class="app-name">Notion</div></div>
-      <div class="app-card" data-url="https://kahoot.it"><div class="app-icon" style="color:#ff3355">K</div><div class="app-name">Kahoot</div></div>
-      <div class="app-card" data-url="https://quizlet.com"><div class="app-icon" style="color:#4257b2">Q</div><div class="app-name">Quizlet</div></div>
-      <div class="app-card" data-url="https://canva.com"><div class="app-icon" style="color:#7d2ae8">C</div><div class="app-name">Canva</div></div>
-      <div class="app-card" data-url="https://duolingo.com"><div class="app-icon" style="color:#58cc02">🦉</div><div class="app-name">Duolingo</div></div>
-      <div class="app-card" data-url="https://open.spotify.com"><div class="app-icon" style="color:#1db954">♫</div><div class="app-name">Spotify</div></div>
-    </div>
-  </main>
-
-  <!-- SETTINGS -->
-  <main class="tab-content" id="tab-settings">
-    <section class="page-header">
-      <div class="hero-eyebrow">CONFIG</div>
-      <h2 class="page-title">Settings</h2>
-      <p class="page-sub">Customize your Nebula experience.</p>
-    </section>
-    <div class="settings-panel">
-      <div class="setting-group">
-        <div class="setting-label">TAB CLOAK</div>
-        <p class="setting-desc">Disguise this tab so it looks like another site.</p>
-        <div class="setting-row">
-          <select class="setting-input" id="cloak-preset">
-            <option value="">— Pick a preset —</option>
-            <option value="Google Classroom|https://ssl.gstatic.com/classroom/favicon.png">Google Classroom</option>
-            <option value="Google Docs|https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">Google Docs</option>
-            <option value="Khan Academy|https://cdn.kastatic.org/images/favicon.ico">Khan Academy</option>
-            <option value="Quizlet|https://quizlet.com/favicon.ico">Quizlet</option>
-            <option value="Wikipedia|https://en.wikipedia.org/favicon.ico">Wikipedia</option>
-          </select>
-          <button class="setting-btn" id="apply-cloak-preset">Apply</button>
-        </div>
-      </div>
-      <div class="setting-group">
-        <div class="setting-label">PANIC KEY</div>
-        <p class="setting-desc">Press a key to instantly redirect away from this page.</p>
-        <div class="setting-row">
-          <select id="panic-key" class="setting-input">
-            <option value="Escape">Escape</option>
-            <option value="F1">F1</option>
-            <option value="F2">F2</option>
-            <option value="F5">F5</option>
-          </select>
-          <input type="text" id="panic-url" class="setting-input" placeholder="Redirect URL" />
-          <button class="setting-btn" id="save-panic">Save</button>
-        </div>
-      </div>
-      <div class="setting-group">
-        <div class="setting-label">PROXY STATUS</div>
-        <div id="status-display" style="color:var(--text-dim);font-size:0.88rem;font-family:var(--font-body)">Checking...</div>
+      <div class="hints">
+        <span class="hint" data-q="youtube.com">youtube</span>
+        <span class="hint" data-q="discord.com">discord</span>
+        <span class="hint" data-q="reddit.com">reddit</span>
+        <span class="hint" data-q="twitch.tv">twitch</span>
+        <span class="hint" data-q="spotify.com">spotify</span>
+        <span class="hint" data-q="instagram.com">instagram</span>
       </div>
     </div>
-  </main>
-
-  <!-- PROXY OVERLAY -->
-  <div id="proxy-overlay" class="proxy-overlay hidden">
-    <div class="proxy-bar">
-      <button class="proxy-nav-btn" id="proxy-back">←</button>
-      <button class="proxy-nav-btn" id="proxy-forward">→</button>
-      <button class="proxy-nav-btn" id="proxy-reload">↺</button>
-      <div class="proxy-url-box" id="proxy-url-display">about:blank</div>
-      <button class="proxy-newtab-btn" id="proxy-newtab">⧉</button>
-      <button class="proxy-close-btn" id="proxy-close">✕ Close</button>
-    </div>
-    <iframe id="proxy-frame" class="proxy-frame"
-      allow="fullscreen; autoplay; clipboard-write; encrypted-media"
-      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock allow-storage-access-by-user-activation">
-    </iframe>
   </div>
 
-  <script src="/uv/uv.bundle.js"></script>
-  <script src="/uv/uv.config.js"></script>
-  <script src="/js/register-sw.js"></script>
-  <script src="/js/main.js"></script>
+  <div class="sec-label">QUICK ACCESS</div>
+  <div class="quick-grid">
+    <button class="qb" data-url="https://youtube.com"><i class="qi">▶</i>YouTube</button>
+    <button class="qb" data-url="https://discord.com"><i class="qi">◈</i>Discord</button>
+    <button class="qb" data-url="https://reddit.com"><i class="qi">◉</i>Reddit</button>
+    <button class="qb" data-url="https://twitter.com"><i class="qi">✕</i>Twitter</button>
+    <button class="qb" data-url="https://spotify.com"><i class="qi">♫</i>Spotify</button>
+    <button class="qb" data-url="https://twitch.tv"><i class="qi">♟</i>Twitch</button>
+    <button class="qb" data-url="https://instagram.com"><i class="qi">◎</i>Instagram</button>
+    <button class="qb" data-url="https://google.com"><i class="qi">✦</i>Google</button>
+    <button class="qb" data-url="https://netflix.com"><i class="qi">▣</i>Netflix</button>
+    <button class="qb" data-url="https://tiktok.com"><i class="qi">◈</i>TikTok</button>
+    <button class="qb" data-url="https://github.com"><i class="qi">◻</i>GitHub</button>
+    <button class="qb" data-url="https://chatgpt.com"><i class="qi">✧</i>ChatGPT</button>
+  </div>
+</div>
+
+<!-- GAMES -->
+<div class="tab" id="tab-games">
+  <div class="ph"><div class="ph-eye">// ARCADE</div><h2 class="ph-title">Games</h2><p class="ph-sub">Unblocked — all routed through Ultraviolet.</p></div>
+  <div class="games-grid">
+    <div class="gc" data-url="https://1v1.lol"><div class="gt" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">🎯</div><div class="gi"><div class="gn">1v1.LOL</div><div class="gtag">SHOOTER</div></div></div>
+    <div class="gc" data-url="https://krunker.io"><div class="gt" style="background:linear-gradient(135deg,#0d0d1a,#1a0a2e)">🔫</div><div class="gi"><div class="gn">Krunker.io</div><div class="gtag">FPS</div></div></div>
+    <div class="gc" data-url="https://slither.io"><div class="gt" style="background:linear-gradient(135deg,#0a1a0d,#0d2010)">🐍</div><div class="gi"><div class="gn">Slither.io</div><div class="gtag">IO</div></div></div>
+    <div class="gc" data-url="https://agar.io"><div class="gt" style="background:linear-gradient(135deg,#1a0a10,#200d15)">⚪</div><div class="gi"><div class="gn">Agar.io</div><div class="gtag">IO</div></div></div>
+    <div class="gc" data-url="https://diep.io"><div class="gt" style="background:linear-gradient(135deg,#101020,#181828)">🎮</div><div class="gi"><div class="gn">Diep.io</div><div class="gtag">IO</div></div></div>
+    <div class="gc" data-url="https://moomoo.io"><div class="gt" style="background:linear-gradient(135deg,#0a1520,#0d1a28)">🌿</div><div class="gi"><div class="gn">MooMoo.io</div><div class="gtag">SURVIVAL</div></div></div>
+    <div class="gc" data-url="https://skribbl.io"><div class="gt" style="background:linear-gradient(135deg,#1a1000,#201500)">✏️</div><div class="gi"><div class="gn">Skribbl.io</div><div class="gtag">DRAWING</div></div></div>
+    <div class="gc" data-url="https://paper.io"><div class="gt" style="background:linear-gradient(135deg,#1a0800,#201000)">📄</div><div class="gi"><div class="gn">Paper.io</div><div class="gtag">IO</div></div></div>
+    <div class="gc" data-url="https://chess.com"><div class="gt" style="background:linear-gradient(135deg,#0d0d0d,#1a1a1a)">♟</div><div class="gi"><div class="gn">Chess.com</div><div class="gtag">BOARD</div></div></div>
+    <div class="gc" data-url="https://www.coolmathgames.com"><div class="gt" style="background:linear-gradient(135deg,#1a0020,#200028)">🧮</div><div class="gi"><div class="gn">Cool Math</div><div class="gtag">PUZZLE</div></div></div>
+    <div class="gc" data-url="https://wordle.com"><div class="gt" style="background:linear-gradient(135deg,#001a10,#002018)">📝</div><div class="gi"><div class="gn">Wordle</div><div class="gtag">PUZZLE</div></div></div>
+    <div class="gc" data-url="https://zombs.io"><div class="gt" style="background:linear-gradient(135deg,#0a0a1a,#10102a)">🧟</div><div class="gi"><div class="gn">Zombs.io</div><div class="gtag">SURVIVAL</div></div></div>
+  </div>
+</div>
+
+<!-- APPS -->
+<div class="tab" id="tab-apps">
+  <div class="ph"><div class="ph-eye">// TOOLS</div><h2 class="ph-title">Apps</h2><p class="ph-sub">Essential web apps, unblocked.</p></div>
+  <div class="apps-grid">
+    <div class="ac" data-url="https://docs.google.com"><div class="ai" style="color:#4285f4">◻</div><div class="an">Google Docs</div></div>
+    <div class="ac" data-url="https://drive.google.com"><div class="ai" style="color:#34a853">▲</div><div class="an">Google Drive</div></div>
+    <div class="ac" data-url="https://mail.google.com"><div class="ai" style="color:#ea4335">✉</div><div class="an">Gmail</div></div>
+    <div class="ac" data-url="https://classroom.google.com"><div class="ai" style="color:#fbbc04">◈</div><div class="an">Classroom</div></div>
+    <div class="ac" data-url="https://slides.google.com"><div class="ai" style="color:#f4b400">◼</div><div class="an">Slides</div></div>
+    <div class="ac" data-url="https://sheets.google.com"><div class="ai" style="color:#0f9d58">▦</div><div class="an">Sheets</div></div>
+    <div class="ac" data-url="https://notion.so"><div class="ai" style="color:#fff">◻</div><div class="an">Notion</div></div>
+    <div class="ac" data-url="https://kahoot.it"><div class="ai" style="color:#ff3355">K</div><div class="an">Kahoot</div></div>
+    <div class="ac" data-url="https://quizlet.com"><div class="ai" style="color:#4257b2">Q</div><div class="an">Quizlet</div></div>
+    <div class="ac" data-url="https://canva.com"><div class="ai" style="color:#7d2ae8">C</div><div class="an">Canva</div></div>
+    <div class="ac" data-url="https://duolingo.com"><div class="ai" style="color:#58cc02">🦉</div><div class="an">Duolingo</div></div>
+    <div class="ac" data-url="https://open.spotify.com"><div class="ai" style="color:#1db954">♫</div><div class="an">Spotify</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="tab" id="tab-settings">
+  <div class="ph"><div class="ph-eye">// CONFIG</div><h2 class="ph-title">Settings</h2><p class="ph-sub">Customize your Nebula experience.</p></div>
+  <div class="settings-wrap">
+    <div class="sg">
+      <div class="sl">TAB CLOAK</div>
+      <p class="sd">Disguise this tab so it looks like another site.</p>
+      <div class="sr">
+        <select class="si" id="cloak-preset">
+          <option value="">— Pick a preset —</option>
+          <option value="Google Classroom|https://ssl.gstatic.com/classroom/favicon.png">Google Classroom</option>
+          <option value="Google Docs|https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">Google Docs</option>
+          <option value="Khan Academy|https://cdn.kastatic.org/images/favicon.ico">Khan Academy</option>
+          <option value="Quizlet|https://quizlet.com/favicon.ico">Quizlet</option>
+          <option value="Wikipedia|https://en.wikipedia.org/favicon.ico">Wikipedia</option>
+        </select>
+        <button class="sb" id="apply-preset">Apply</button>
+      </div>
+    </div>
+    <div class="sg">
+      <div class="sl">PANIC KEY</div>
+      <p class="sd">Press a key to instantly redirect away.</p>
+      <div class="sr">
+        <select id="panic-key" class="si">
+          <option value="Escape">Escape</option>
+          <option value="F1">F1</option>
+          <option value="F2">F2</option>
+          <option value="F5">F5</option>
+        </select>
+        <input type="text" id="panic-url" class="si" placeholder="Redirect URL"/>
+        <button class="sb" id="save-panic">Save</button>
+      </div>
+    </div>
+    <div class="sg">
+      <div class="sl">PROXY STATUS</div>
+      <div id="status-display" style="color:var(--txt2);font-size:.85rem;font-family:var(--font-mono)">Checking...</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROXY OVERLAY -->
+<div class="overlay hidden" id="proxy-overlay">
+  <div class="pbar">
+    <button class="pnav" id="proxy-back">←</button>
+    <button class="pnav" id="proxy-forward">→</button>
+    <button class="pnav" id="proxy-reload">↺</button>
+    <div class="purl" id="proxy-url-display">about:blank</div>
+    <button class="pnt" id="proxy-newtab">⧉</button>
+    <button class="pcls" id="proxy-close">✕ CLOSE</button>
+  </div>
+  <iframe id="proxy-frame" class="pframe"
+    allow="fullscreen;autoplay;clipboard-write;encrypted-media"
+    sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-pointer-lock allow-storage-access-by-user-activation">
+  </iframe>
+</div>
+
+<script src="/uv/uv.bundle.js"></script>
+<script src="/uv/uv.config.js"></script>
+<script src="/js/register-sw.js"></script>
+<script>
+// ── CANVAS NEBULA BG ──────────────────────────────────────
+(()=>{
+  const c=document.getElementById('bg'),x=c.getContext('2d');
+  let W,H,pts=[],t=0;
+  function init(){
+    W=c.width=innerWidth;H=c.height=innerHeight;
+    pts=Array.from({length:180},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12,
+      r:Math.random()*1.5+.3,
+      ph:Math.random()*Math.PI*2,sp:Math.random()*.005+.001
+    }));
+  }
+  function draw(){
+    x.clearRect(0,0,W,H);
+    // nebula blobs
+    const blobs=[
+      {x:W*.15,y:H*.2,r:350,c:'rgba(129,140,248,0.06)'},
+      {x:W*.85,y:H*.75,r:300,c:'rgba(192,132,252,0.05)'},
+      {x:W*.5,y:H*.5,r:250,c:'rgba(56,189,248,0.04)'},
+    ];
+    blobs.forEach(b=>{
+      const g=x.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
+      g.addColorStop(0,b.c);g.addColorStop(1,'transparent');
+      x.fillStyle=g;x.beginPath();x.arc(b.x,b.y,b.r,0,Math.PI*2);x.fill();
+    });
+    // stars
+    pts.forEach(p=>{
+      const a=.15+.5*Math.sin(t*p.sp+p.ph);
+      x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);
+      x.fillStyle=`rgba(200,215,255,${a})`;x.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  init();draw();
+  addEventListener('resize',init);
+})();
+
+// ── TABS ──────────────────────────────────────────────────
+document.querySelectorAll('.ntab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('tab-'+b.dataset.tab)?.classList.add('on');
+  });
+});
+
+// ── PROXY ─────────────────────────────────────────────────
+function buildUrl(raw){
+  let url=raw.trim();
+  if(!/^https?:\/\//.test(url)&&!/^[\w-]+\.[a-z]{2,}/.test(url))
+    url='https://www.google.com/search?q='+encodeURIComponent(url);
+  else if(!/^https?:\/\//.test(url))url='https://'+url;
+  if(typeof __uv$config!=='undefined')return __uv$config.prefix+__uv$config.encodeUrl(url);
+  return url;
+}
+const OV=document.getElementById('proxy-overlay');
+const FR=document.getElementById('proxy-frame');
+const UD=document.getElementById('proxy-url-display');
+let CU='';
+function open_(u){CU=u;UD.textContent=u;FR.src=buildUrl(u);OV.classList.remove('hidden');document.body.style.overflow='hidden'}
+function close_(){OV.classList.add('hidden');FR.src='about:blank';document.body.style.overflow='';CU=''}
+document.getElementById('proxy-close').onclick=close_;
+document.getElementById('proxy-back').onclick=()=>{try{FR.contentWindow.history.back()}catch(_){}};
+document.getElementById('proxy-forward').onclick=()=>{try{FR.contentWindow.history.forward()}catch(_){}};
+document.getElementById('proxy-reload').onclick=()=>{FR.src=FR.src};
+document.getElementById('proxy-newtab').onclick=()=>window.open(buildUrl(CU),'_blank');
+document.getElementById('go-btn').onclick=()=>{const v=document.getElementById('proxy-input').value.trim();if(v)open_(v)};
+document.getElementById('proxy-input').onkeydown=e=>{if(e.key==='Enter'){const v=e.target.value.trim();if(v)open_(v)}};
+document.querySelectorAll('.hint').forEach(h=>h.addEventListener('click',()=>{document.getElementById('proxy-input').value=h.dataset.q;open_(h.dataset.q)}));
+document.querySelectorAll('.qb').forEach(b=>b.addEventListener('click',()=>open_(b.dataset.url)));
+document.querySelectorAll('.gc').forEach(c=>c.addEventListener('click',()=>open_(c.dataset.url)));
+document.querySelectorAll('.ac').forEach(c=>c.addEventListener('click',()=>open_(c.dataset.url)));
+
+// ── SETTINGS ──────────────────────────────────────────────
+document.getElementById('apply-preset').onclick=()=>{
+  const v=document.getElementById('cloak-preset').value;if(!v)return;
+  const[t,i]=v.split('|');if(t)document.title=t;
+  let lk=document.querySelector("link[rel~='icon']");
+  if(!lk){lk=document.createElement('link');lk.rel='icon';document.head.appendChild(lk)}
+  lk.href=i;localStorage.setItem('ct',t);localStorage.setItem('ci',i);
+};
+let pk=localStorage.getItem('pk')||'Escape';
+let pu=localStorage.getItem('pu')||'https://classroom.google.com';
+document.getElementById('panic-key').value=pk;
+document.getElementById('panic-url').value=pu;
+document.getElementById('save-panic').onclick=()=>{
+  pk=document.getElementById('panic-key').value;
+  pu=document.getElementById('panic-url').value||'https://classroom.google.com';
+  localStorage.setItem('pk',pk);localStorage.setItem('pu',pu);
+};
+document.addEventListener('keydown',e=>{if(e.key===pk&&!e.ctrlKey&&!e.metaKey)location.replace(pu)});
+const ct=localStorage.getItem('ct'),ci=localStorage.getItem('ci');
+if(ct)document.title=ct;
+if(ci){const lk=document.querySelector("link[rel~='icon']");if(lk)lk.href=ci}
+window.addEventListener('load',()=>{
+  const s=document.getElementById('status-display');
+  s.innerHTML=typeof __uv$config!=='undefined'
+    ?'<span style="color:#34d399">● ACTIVE</span> — UV prefix: <span style="color:#818cf8">'+__uv$config.prefix+'</span>'
+    :'<span style="color:#fb7185">● UV NOT LOADED</span> — check server logs';
+});
+</script>
+<script src="/js/register-sw.js"></script>
 </body>
 </html>
