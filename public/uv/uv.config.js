@@ -1,5 +1,5 @@
 self.__uv$config = {
-    prefix: '/uv/service/',
+    prefix: '/uv/service/', // This must match!
     bare: 'https://student-unblocker.com', 
     encodeUrl: Ultraviolet.codec.xor.encode,
     decodeUrl: Ultraviolet.codec.xor.decode,
